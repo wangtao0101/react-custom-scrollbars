@@ -225,6 +225,12 @@ export default class Scrollbars extends Component {
         thumbHorizontal.addEventListener('mousedown', this.handleHorizontalThumbMouseDown);
         thumbVertical.addEventListener('mousedown', this.handleVerticalThumbMouseDown);
         window.addEventListener('resize', this.handleWindowResize);
+        /**
+         * Workaround for https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/10124881/
+         * which results in calling handleWindowResize even after removeEventListener has been called
+         * if the component is unmounted during a resize event propagation
+         */
+        this.listeningToWindowResize = true;
     }
 
     removeListeners() {
@@ -241,6 +247,7 @@ export default class Scrollbars extends Component {
         trackVertical.removeEventListener('mousedown', this.handleVerticalTrackMouseDown);
         thumbHorizontal.removeEventListener('mousedown', this.handleHorizontalThumbMouseDown);
         thumbVertical.removeEventListener('mousedown', this.handleVerticalThumbMouseDown);
+        this.listeningToWindowResize = false;
         window.removeEventListener('resize', this.handleWindowResize);
         // Possibly setup by `handleDragStart`
         this.teardownDragging();
@@ -283,6 +290,9 @@ export default class Scrollbars extends Component {
     }
 
     handleWindowResize() {
+        if (!this.listeningToWindowResize) {
+            return;
+        }
         this.update();
     }
 
