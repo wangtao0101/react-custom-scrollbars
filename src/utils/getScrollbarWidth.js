@@ -15,7 +15,7 @@ export default function getScrollbarWidth() {
             MsOverflowStyle: 'scrollbar'
         });
         document.body.appendChild(div);
-        scrollbarWidth = (div.offsetWidth - div.clientWidth) || 15;
+        scrollbarWidth = div.offsetWidth - div.clientWidth;
         document.body.removeChild(div);
     } else {
         scrollbarWidth = 0;

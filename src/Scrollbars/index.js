@@ -482,7 +482,13 @@ export default class Scrollbars extends Component {
     }
 
     render() {
-        const scrollbarWidth = getScrollbarWidth();
+        let scrollbarWidth = getScrollbarWidth();
+        if (this.view) {
+            const actualScrollbarWidth = this.view.offsetWidth - this.view.clientWidth;
+            if (actualScrollbarWidth !== scrollbarWidth) {
+                scrollbarWidth = actualScrollbarWidth;
+            }
+        }
         /* eslint-disable no-unused-vars */
         const {
             onScroll,
