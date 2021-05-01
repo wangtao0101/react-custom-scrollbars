@@ -37,6 +37,8 @@ export interface ScrollbarProps extends React.HTMLProps<Scrollbars> {
     hideTracksWhenNotNeeded?: boolean;
 
     autoHide?: boolean;
+    autoHideVertical?: boolean;
+    autoHideHorizontal?: boolean;
     autoHideTimeout?: number;
     autoHideDuration?: number;
 

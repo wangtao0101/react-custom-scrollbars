@@ -272,8 +272,8 @@ export default class Scrollbars extends Component {
     }
 
     handleScrollStartAutoHide() {
-        const { autoHide } = this.props;
-        if (!autoHide) return;
+        const { autoHide, autoHideHorizontal, autoHideVertical } = this.props;
+        if (!autoHide && !autoHideHorizontal && !autoHideVertical) return;
         this.showTracks();
     }
 
@@ -284,8 +284,8 @@ export default class Scrollbars extends Component {
     }
 
     handleScrollStopAutoHide() {
-        const { autoHide } = this.props;
-        if (!autoHide) return;
+        const { autoHide, autoHideHorizontal, autoHideVertical } = this.props;
+        if (!autoHide && !autoHideHorizontal && !autoHideVertical) return;
         this.hideTracks();
     }
 
@@ -380,8 +380,8 @@ export default class Scrollbars extends Component {
     }
 
     handleDragEndAutoHide() {
-        const { autoHide } = this.props;
-        if (!autoHide) return;
+        const { autoHide, autoHideHorizontal, autoHideVertical } = this.props;
+        if (!autoHide && !autoHideHorizontal && !autoHideVertical) return;
         this.hideTracks();
     }
 
@@ -391,8 +391,8 @@ export default class Scrollbars extends Component {
     }
 
     handleTrackMouseEnterAutoHide() {
-        const { autoHide } = this.props;
-        if (!autoHide) return;
+        const { autoHide, autoHideHorizontal, autoHideVertical } = this.props;
+        if (!autoHide && !autoHideHorizontal && !autoHideVertical) return;
         this.showTracks();
     }
 
@@ -402,15 +402,20 @@ export default class Scrollbars extends Component {
     }
 
     handleTrackMouseLeaveAutoHide() {
-        const { autoHide } = this.props;
-        if (!autoHide) return;
+        const { autoHide, autoHideHorizontal, autoHideVertical } = this.props;
+        if (!autoHide && !autoHideHorizontal && !autoHideVertical) return;
         this.hideTracks();
     }
 
     showTracks() {
         clearTimeout(this.hideTracksTimeout);
-        css(this.trackHorizontal, { opacity: 1 });
-        css(this.trackVertical, { opacity: 1 });
+        const { autoHide, autoHideHorizontal, autoHideVertical } = this.props;
+        if (autoHide || autoHideHorizontal) {
+            css(this.trackHorizontal, { opacity: 1 });
+        }
+        if (autoHide || autoHideVertical) {
+            css(this.trackVertical, { opacity: 1 });
+        }
     }
 
     hideTracks() {
@@ -418,10 +423,15 @@ export default class Scrollbars extends Component {
         if (this.scrolling) return;
         if (this.trackMouseOver) return;
         const { autoHideTimeout } = this.props;
+        const { autoHide, autoHideHorizontal, autoHideVertical } = this.props;
         clearTimeout(this.hideTracksTimeout);
         this.hideTracksTimeout = setTimeout(() => {
-            css(this.trackHorizontal, { opacity: 0 });
-            css(this.trackVertical, { opacity: 0 });
+            if (autoHide || autoHideHorizontal) {
+                css(this.trackHorizontal, { opacity: 0 });
+            }
+            if (autoHide || autoHideVertical) {
+                css(this.trackVertical, { opacity: 0 });
+            }
         }, autoHideTimeout);
     }
 
@@ -514,6 +524,8 @@ export default class Scrollbars extends Component {
             tagName,
             hideTracksWhenNotNeeded,
             autoHide,
+            autoHideHorizontal,
+            autoHideVertical,
             autoHideTimeout,
             autoHideDuration,
             thumbSize,
@@ -524,6 +536,7 @@ export default class Scrollbars extends Component {
             autoHeightMax,
             style,
             children,
+            className,
             ...props
         } = this.props;
         /* eslint-enable no-unused-vars */
@@ -571,7 +584,7 @@ export default class Scrollbars extends Component {
 
         const trackHorizontalStyle = {
             ...trackHorizontalStyleDefault,
-            ...(autoHide && trackAutoHeightStyle),
+            ...((autoHide || autoHideHorizontal) && trackAutoHeightStyle),
             ...((!scrollbarWidth || (universal && !didMountUniversal)) && {
                 display: 'none'
             })
@@ -579,13 +592,15 @@ export default class Scrollbars extends Component {
 
         const trackVerticalStyle = {
             ...trackVerticalStyleDefault,
-            ...(autoHide && trackAutoHeightStyle),
+            ...((autoHide || autoHideVertical) && trackAutoHeightStyle),
             ...((!scrollbarWidth || (universal && !didMountUniversal)) && {
                 display: 'none'
             })
         };
 
-        return createElement(tagName, { ...props, style: containerStyle, ref: (ref) => { this.container = ref; } }, [
+        const containerClassName = className ? `react-custom-scrollbars ${className}` : 'react-custom-scrollbars';
+
+        return createElement(tagName, { ...props, className: containerClassName, style: containerStyle, ref: (ref) => { this.container = ref; } }, [
             cloneElement(
                 renderView({ style: viewStyle }),
                 { key: 'view', ref: (ref) => { this.view = ref; } },
@@ -627,6 +642,8 @@ Scrollbars.propTypes = {
     thumbMinSize: PropTypes.number,
     hideTracksWhenNotNeeded: PropTypes.bool,
     autoHide: PropTypes.bool,
+    autoHideVertical: PropTypes.bool,
+    autoHideHorizontal: PropTypes.bool,
     autoHideTimeout: PropTypes.number,
     autoHideDuration: PropTypes.number,
     autoHeight: PropTypes.bool,
@@ -641,6 +658,7 @@ Scrollbars.propTypes = {
     universal: PropTypes.bool,
     style: PropTypes.object,
     children: PropTypes.node,
+    className: PropTypes.string,
 };
 
 Scrollbars.defaultProps = {
@@ -653,10 +671,13 @@ Scrollbars.defaultProps = {
     thumbMinSize: 30,
     hideTracksWhenNotNeeded: false,
     autoHide: false,
+    autoHideVertical: false,
+    autoHideHorizontal: false,
     autoHideTimeout: 1000,
     autoHideDuration: 200,
     autoHeight: false,
     autoHeightMin: 0,
     autoHeightMax: 200,
     universal: false,
+    className: undefined
 };

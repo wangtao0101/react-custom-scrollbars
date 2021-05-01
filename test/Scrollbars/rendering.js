@@ -21,7 +21,7 @@ export default function createTests(scrollbarWidth) {
                         <div style={{ width: 200, height: 200 }}/>
                     </Scrollbars>
                 ), node, function callback() {
-                    expect(findDOMNode(this).className).toEqual('foo');
+                    expect(findDOMNode(this).className).toEqual('react-custom-scrollbars foo');
                     done();
                 });
             });
