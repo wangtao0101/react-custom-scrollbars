@@ -1,6 +1,6 @@
 {
-  "name": "@lingyi/react-custom-scrollbars",
-  "version": "4.2.6-beta.2",
+  "name": "@aliyun-sls/react-custom-scrollbars",
+  "version": "4.2.6",
   "description": "React scrollbars component",
   "main": "lib/index.js",
   "types": "index.d.ts",
